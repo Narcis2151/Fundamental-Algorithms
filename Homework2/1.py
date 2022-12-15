@@ -36,8 +36,7 @@ for i in range(m):
         else:
             fout.write("NU\n")
     else:
-        if Reprez(u) != Reprez(v):
-            Reuneste(u,v)
+        Reuneste(u,v)
             
 #print(tata,h)
 fin.close()

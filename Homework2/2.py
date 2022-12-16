@@ -1,62 +1,43 @@
-from math import inf
-from math import sqrt
-
-fin = open("retea2.in", "r")
-fout = open("retea2.out", "w")
+fin = open("disjoint.in", "r")
+fout = open("disjoint.out", "w")
 
 nm = fin.readline().split()
 n, m = int(nm[0]), int(nm[1])
-
-def dist(a,b):
-    return (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])
-
-centrale = []
-blocuri = []
-graf = [[0 for i in range(m+1)] for i in range(m+1)]
+tata = {}
+h = {}
 for i in range(n):
-    u,v = (int(x) for x in fin.readline().split())
-    centrale.append((u,v))
+    tata[i+1] = 0
+    h[i+1] = 0
+
+def Reprez(u):
+    if tata[u] == 0:
+        return u
+    tata[u] = Reprez(tata[u])
+    return tata[u]
+
+def Reuneste(u, v):
+    ru = Reprez(u)
+    rv = Reprez(v)
+    if h[ru] > h[rv]:
+        tata[rv] = ru
+    else:
+        tata[ru] = rv
+        if h[ru] == h[rv]:
+            h[rv] = h[rv] + 1
 
 for i in range(m):
-    u,v = (int(x) for x in fin.readline().split())
-    blocuri.append((u,v))
-
-for x in range(len(blocuri)-1):
-    for y in range(x+1, len(blocuri)):
-        graf[x][y] = sqrt(dist(blocuri[x], blocuri[y]))
-        graf[y][x] = sqrt(dist(blocuri[x], blocuri[y]))
-
-for x in range(len(blocuri)):
-    min=float(inf)
-    for y in range(len(centrale)):
-        d = sqrt(dist(blocuri[x], centrale[y]))
-        if d < min:
-            min = d
-    #print(min)
-    graf[x][m] = min
-    graf[m][x] = min
-
-#print(graf)
-
-vizitat = [0 for i in range(m+1)]
-nr = 0
-suma = float(0)
-vizitat[0] = True
-while nr < m:
-    min = float(inf)
-    x = 0
-    y = 0
-    for i in range(m+1):
-        if vizitat[i]:
-            for j in range(m+1):
-                if (not vizitat[j]) and graf[i][j]:
-                    if min > graf[i][j]:
-                        min = graf[i][j]
-                        x = i
-                        y = j
-    suma += graf[x][y]
-    vizitat[y] = True
-    nr+=1
-fout.write(str(round(suma,7)))
+    cuv = fin.readline().split()
+    #print(cuv)
+    c, u, v = int(cuv[0]), int(cuv[1]), int(cuv[2])
+    #print(c,u,v)
+    if c == 2:
+        if Reprez(u) == Reprez(v):
+            fout.write("DA\n")
+        else:
+            fout.write("NU\n")
+    else:
+        Reuneste(u,v)
+            
+#print(tata,h)
 fin.close()
 fout.close()

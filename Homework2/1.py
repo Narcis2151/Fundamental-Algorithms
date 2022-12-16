@@ -1,43 +1,71 @@
-fin = open("disjoint.in", "r")
-fout = open("disjoint.out", "w")
+from math import inf
+from math import sqrt
+from sys import maxsize
+fin = open("retea2.in", "r")
+fout = open("retea2.out", "w")
 
 nm = fin.readline().split()
 n, m = int(nm[0]), int(nm[1])
-tata = {}
-h = {}
+
+def dist(a,b):
+    return (a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1])
+
+centrale = []
+blocuri = []
+graf = [[0 for i in range(m+1)] for i in range(m+1)]
 for i in range(n):
-    tata[i+1] = 0
-    h[i+1] = 0
-
-def Reprez(u):
-    if tata[u] == 0:
-        return u
-    tata[u] = Reprez(tata[u])
-    return tata[u]
-
-def Reuneste(u, v):
-    ru = Reprez(u)
-    rv = Reprez(v)
-    if h[ru] > h[rv]:
-        tata[rv] = ru
-    else:
-        tata[ru] = rv
-        if h[ru] == h[rv]:
-            h[rv] = h[rv] + 1
+    u,v = (int(x) for x in fin.readline().split())
+    centrale.append((u,v))
 
 for i in range(m):
-    cuv = fin.readline().split()
-    #print(cuv)
-    c, u, v = int(cuv[0]), int(cuv[1]), int(cuv[2])
-    #print(c,u,v)
-    if c == 2:
-        if Reprez(u) == Reprez(v):
-            fout.write("DA\n")
-        else:
-            fout.write("NU\n")
-    else:
-        Reuneste(u,v)
-            
-#print(tata,h)
+    u,v = (int(x) for x in fin.readline().split())
+    blocuri.append((u,v))
+
+for x in range(len(blocuri)-1):
+    for y in range(x+1, len(blocuri)):
+        graf[x][y] = sqrt(dist(blocuri[x], blocuri[y]))
+        graf[y][x] = sqrt(dist(blocuri[x], blocuri[y]))
+
+for x in range(len(blocuri)):
+    min=float(inf)
+    for y in range(len(centrale)):
+        d = sqrt(dist(blocuri[x], centrale[y]))
+        if d < min:
+            min = d
+    #print(min)
+    graf[x][m] = min
+    graf[m][x] = min
+
+#print(graf)
+
+vizitat = [0 for i in range(m+1)]
+nr = 0
+suma = float(0)
+tata = [None] * (m+1)
+d = [float(inf)] * (m+1)
+tata[0] = -1
+d[0] = 0
+#print(graf)
+while nr < m+1:
+    #print(d)
+    min = float(inf)
+    for i in range(len(graf)):
+        if vizitat[i] == 0 and d[i] < min:
+            min = d[i]
+            u = i
+
+    vizitat[u] = 1
+    nr +=1
+    suma += d[u]
+    #print(suma)
+
+
+    for v in range(len(graf[u])):
+        if graf[u][v] > 0 and vizitat[v] == 0 and d[v] > graf[u][v]:
+            d[v] = graf[u][v]
+            tata[v] = u
+
+#print(*graf, sep='\n')
+fout.write(str(round(suma,7)))
 fin.close()
 fout.close()

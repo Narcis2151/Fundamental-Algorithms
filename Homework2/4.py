@@ -1,31 +1,37 @@
 import heapq as hq
-
+from math import inf
 class Solution:
     def maxProbability(self, n, edges, succProb, start, end):
         graf = {i: [] for i in range(0, n)}
         
         for e, w in zip(edges, succProb):
-            v1, v2 = e
-            graf[v1].append((w, v2))
-            graf[v2].append((w, v1))
+            u, v = e
+            graf[u].append((w, v))
+            graf[v].append((w, u))
         
-        max_heap = [(-1, start)]
-        vizitat = set()
+        max_heap = [(1, start)]
+        vizitat = [0] * n
+        d = [-200000000 for i in range(n)]
 
-        
         while max_heap:
-            prob, v = hq.heappop(max_heap)            
-            
-            if v in vizitat: 
+
+            prob, u = hq.heappop(max_heap)            
+            prob = abs(prob)
+
+            if vizitat[u] !=0:
                 continue
-            if v == end: 
-                return -prob    
+
+            if u == end: 
+                return prob    
             
-            vizitat.add(v)
+            vizitat[u] += 1
             
-            for prob_vecin, vecin in graf[v]:
-                if vecin not in vizitat:
-                    hq.heappush(max_heap, (prob * prob_vecin, vecin))
-        
+            for prob_v, v in graf[u]:
+                prob_v *= prob
+                if d[v] < prob_v:
+                    d[v] = prob_v       
+                    hq.heappush(max_heap, (-prob_v, v))        
         return 0.0
 
+sol = Solution()
+print(sol.maxProbability(n = 3, edges = [[0,1],[1,2],[0,2]], succProb = [0.5,0.5,0.3], start = 0, end = 2))

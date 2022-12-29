@@ -37,6 +37,12 @@ for i in range(m):
             fout.write("NU\n")
     else:
         Reuneste(u,v)
+        numar = 0
+        for x in tata:
+            if tata[x] == 0:
+                numar +=1
+        print(f"Numarul de multimi distincte este: {numar}")
+
             
 #print(tata,h)
 fin.close()

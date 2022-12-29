@@ -25,7 +25,6 @@ for i in range(n-1):
     for j in range(i+1, n):
         d=Levenshtein(cuvinte[i], cuvinte[j])
         muchii.append((i,j,d))
-print(muchii)
 
 def Reprez(u):
     if tata[u] ==0:
@@ -61,7 +60,7 @@ while i< len(muchii):
 
         if nrmsel == n - k:  
             break
-   i+=1
+   i+=1 
 
 
 for i in range(n):

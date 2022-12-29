@@ -277,7 +277,7 @@ class Graph_Orientat:
                 self.SortTopUtil(neighbour, visited, s, fin, tata, cicl)
             else:
                 if fin[neighbour] == 0:
-                    cicl=[True]
+                    cicl.append(True)
                     break
         fin[i] = 1
         s.append(i)
@@ -287,11 +287,11 @@ class Graph_Orientat:
         s = []
         fin = [0] * (self.n+1)
         tata = [0] * (self.n+1)
-        cicl = [False]
+        cicl = []
         for i in self.graph.keys():
             if visited[i] == 0:
                 self.SortTopUtil(i, visited, s, fin, tata, cicl)
-        if cicl==[True]:
+        if cicl!=[]:
             print("Graful are cicluri, sortare topologica imposibila")
         else:
             while len(s) > 0:
@@ -319,26 +319,12 @@ g.addEdge(10, 11)
 #print(g.DFS())
 #print(g.CycleDetect())
 
-g2=Graph_Orientat(12)
-g2.addEdge(1, 7)
-g2.addEdge(7, 4)
-g2.addEdge(4, 1)
-g2.addEdge(1, 11)
-g2.addEdge(11, 2)
-g2.addEdge(2, 11)
-g2.addEdge(2, 5)
-g2.addEdge(5, 6)
-g2.addEdge(6, 5)
-g2.addEdge(7, 5)
-g2.addEdge(7, 8)
-g2.addEdge(8, 6)
-g2.addEdge(6, 3)
-g2.addEdge(3, 8)
-g2.addEdge(9, 8)
-g2.addEdge(3, 9)
-g2.addEdge(12, 9)
-g2.addEdge(12, 10)
-g2.addEdge(10, 12)
-g2.addEdge(10, 1)
+g2=Graph_Orientat(5)
+g2.addEdge(1, 3)
+g2.addEdge(1, 2)
+g2.addEdge(2, 3)
+g2.addEdge(3, 4)
+g2.addEdge(4, 5)
+g2.addEdge(3, 5)
 g2.SortTop()
 

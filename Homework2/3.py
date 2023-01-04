@@ -32,7 +32,6 @@ def Reprez(u):
     tata[u]=Reprez(tata[u])
     return tata[u]
 
-
 def Reuneste(u,v):
     ru=Reprez(u)
     rv=Reprez(v)
@@ -51,8 +50,11 @@ cost=0
 arbore=[]
 i=0
 while i< len(muchii):
+
    m=muchii[i]
+
    if Reprez(m[0]) != Reprez(m[1]):
+
         arbore.append((m[0], m[1]))
         Reuneste(m[0], m[1])
         cost=cost+m[2]
@@ -63,12 +65,12 @@ while i< len(muchii):
    i+=1 
 
 
-for i in range(n):
-    if tata[i]==0:
-        print(cuvinte[i], end=" ")
-        for j in range(n):
-            if tata[j]==i:
-                print(cuvinte[j], end=" ")
+for j in range(n):
+    if tata[j]==0:
+        print(cuvinte[j], end=" ")
+        for k in range(n):
+            if tata[k]==j:
+                print(cuvinte[k], end=" ")
         print()
 print(muchii[i+1][2])
 

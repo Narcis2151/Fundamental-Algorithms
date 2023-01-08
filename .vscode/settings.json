@@ -2,5 +2,6 @@
     "files.associations": {
         "*.csv": "csv",
         "iostream": "cpp"
-    }
+    },
+    "git.ignoreLimitWarning": true
 }

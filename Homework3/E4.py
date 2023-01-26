@@ -14,7 +14,7 @@ class Solution:
             if gout[x] == gin[x] +1:
                 s = x
                 break            
-                
+                    
         rasp = []
         def euler(x):
             while graf[x]:

@@ -15,7 +15,7 @@ for i in range(1, n+1):
     for j in range(1, n+1):
         if i!=j:
             graf[i][n+j] = 1
-print(graf)
+#print(graf)
 
 
 def bfs():
@@ -48,7 +48,7 @@ def max_flow():
     for i in range(t+1):
         numar += graf_r[s][i]
     arce = []
-    print(graf_r)
+    #print(graf_r)
     for i in range(1, n+1):
         for j in range(1, n+1):
             if graf_r[i][n+j] == 1:

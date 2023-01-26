@@ -38,6 +38,7 @@ def max_flow():
     global graf, graf_r, s, t, n, m, e
     dr = bfs()
     while dr != None:
+        
         flow = min(graf[u][v] - graf_r[u][v] for u, v in dr)
         for u, v in dr:
             graf_r[u][v] += flow 

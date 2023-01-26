@@ -87,15 +87,14 @@ class Graph_Neorientat:
                 timp = self.DFSUtil(i, visited, traversal, desc, tata, fin, d, timp=timp)
         return traversal, desc[1:], fin[1:], tata[1:], d[1:]
 
-    def CycleDetectUtil(self, i, visited, tata, cicluri):
+    def CycleDetectUtil(self, i, visited, fin, tata, cicluri):
         visited[i] = 1
-
         for neighbour in self.graph[i]:
             if visited[neighbour] == 0:
                 tata[neighbour] = i
-                self.CycleDetectUtil(neighbour, visited, tata, cicluri)
+                self.CycleDetectUtil(neighbour, visited, fin, tata, cicluri)
             else:
-                if tata[i] != neighbour: #daca nu e muchie din arbore => e muchie de intoarcere
+                if fin[neighbour] == 0 and tata[i] != neighbour: #daca nu e muchie din arbore => e muchie de intoarcere
                     v = i
                     ciclu = []
                     while v != neighbour:
@@ -105,16 +104,81 @@ class Graph_Neorientat:
                     ciclu.append(i)
                     cicluri.append(ciclu)
                     break
-
+        fin[i] = 1
 
     def CycleDetect(self):
         visited=[0] * (self.n+1)
         tata = [0] * (self.n+1)
+        fin = [0] * (self.n+1)
         cicluri = []
         for i in self.graph.keys():
             if visited[i] == 0:
-                self.CycleDetectUtil(i, visited, tata, cicluri)
+                self.CycleDetectUtil(i, visited, fin, tata, cicluri)
         return cicluri
+    
+    def MuchiiCriticeUtil(self, nod, muchii_critice, vizitat, discovery_time, low, parent, time):
+        vizitat[nod] = 1
+        discovery_time[nod] = time
+        low[nod] = time
+        time += 1
+
+        for vecin in self.graph[nod]:
+            if vizitat[vecin] == 0:
+                parent[vecin] = nod
+                time = self.MuchiiCriticeUtil(vecin, muchii_critice, vizitat, discovery_time, low, parent, time)
+                low[nod] = min(low[nod], low[vecin])
+                if low[vecin] > discovery_time[nod]:
+                    muchii_critice.append((nod, vecin))
+            elif vecin != parent[nod]:
+                low[nod] = min(low[nod], discovery_time[vecin])
+        return time
+
+    def MuchiiCritice(self):
+        muchii_critice = []
+        vizitat = [0] * (self.n + 1)
+        discovery_time = [float("Inf")] * (self.n + 1)
+        low = [float("Inf")] * (self.n + 1)
+        parent = [-1] * (self.n + 1)
+        time = 0
+
+        for i in self.graph.keys():
+            if vizitat[i] == 0:
+                timp = self.MuchiiCriticeUtil(i, muchii_critice, vizitat, discovery_time, low, parent, time)
+        return muchii_critice
+
+    def NoduriCriticeUtil(self, nod, noduri_critice, vizitat, discovery_time, low, parent, time, copii):
+        vizitat[nod] = 1
+        discovery_time[nod] = time
+        low[nod] = time
+        time += 1
+        copii = 0
+        for vecin in self.graph[nod]:
+            if vizitat[vecin] == 0:
+                parent[vecin] = nod
+                copii += 1
+                time, copii = self.NoduriCriticeUtil(vecin, noduri_critice, vizitat, discovery_time, low, parent, time, copii)
+                low[nod] = min(low[nod], low[vecin])
+                if parent[nod] == -1 and copii > 1:
+                    noduri_critice.append(nod)
+                elif low[vecin] >= discovery_time[nod] and parent[nod] != -1:
+                    noduri_critice.append(nod)
+            elif vecin != parent[nod]:
+                low[nod] = min(low[nod], discovery_time[vecin])
+        return time, copii
+
+    def NoduriCritice(self):
+        noduri_critice = []
+        vizitat = [0] * (self.n + 1)
+        discovery_time = [float("Inf")] * (self.n + 1)
+        low = [float("Inf")] * (self.n + 1)
+        parent = [-1] * (self.n + 1)
+        time = 0
+        copii = 0
+        for i in self.graph.keys():
+            if vizitat[i] == 0:
+                timp, copii = self.NoduriCriticeUtil(i, noduri_critice, vizitat, discovery_time, low, parent, time, copii)
+        return noduri_critice
+
 
 class Graph_Orientat:
     def __init__(self, n):
@@ -292,38 +356,67 @@ class Graph_Orientat:
             if visited[i] == 0:
                 self.SortTopUtil(i, visited, s, fin, tata, cicl)
         if cicl!=[]:
-            print("Graful are cicluri, sortare topologica imposibila")
+            return "Graful are cicluri, sortare topologica imposibila"
         else:
-            while len(s) > 0:
-                print(s.pop())
-        
+            return s[::-1]
+    
+    def MuchiiCriticeUtil(self, nod, muchii_critice, vizitat, discovery_time, low, parent, time):
+        vizitat[nod] = 1
+        discovery_time[nod] = time
+        low[nod] = time
+        time += 1
 
-g = Graph_Neorientat(11)
-g.addEdge(1, 3)
-g.addEdge(1, 9)
-g.addEdge(1, 5)
-g.addEdge(3, 2)
-g.addEdge(3, 6)
-g.addEdge(2, 5)
-g.addEdge(9, 6)
-g.addEdge(9, 7)
-g.addEdge(9, 8)
-g.addEdge(7, 4)
-g.addEdge(4, 9)
-g.addEdge(4, 8)
-g.addEdge(11, 8)
-g.addEdge(10, 11)
-#print(g.graph)
-#print(g.BFS())
-#print(g.BFS_1(2))
-#print(g.DFS())
-#print(g.CycleDetect())
+        for vecin in self.graph[nod]:
+            if vizitat[vecin] == 0:
+                parent[vecin] = nod
+                time = self.MuchiiCriticeUtil(vecin, muchii_critice, vizitat, discovery_time, low, parent, time)
+                low[nod] = min(low[nod], low[vecin])
+                if low[vecin] > discovery_time[nod]:
+                    muchii_critice.append((nod, vecin))
+            elif vecin != parent[nod]:
+                low[nod] = min(low[nod], discovery_time[vecin])
+        return time
+
+    def MuchiiCritice(self):
+        muchii_critice = []
+        vizitat = [0] * (self.n + 1)
+        discovery_time = [float("Inf")] * (self.n + 1)
+        low = [float("Inf")] * (self.n + 1)
+        parent = [-1] * (self.n + 1)
+        time = 0
+
+        for i in self.graph.keys():
+            if vizitat[i] == 0:
+                timp = self.MuchiiCriticeUtil(i, muchii_critice, vizitat, discovery_time, low, parent, time)
+        return muchii_critice
+
+
+    
+
+g = Graph_Neorientat(8)
+g.addEdge(1, 2)
+g.addEdge(1, 7)
+g.addEdge(2, 7)
+g.addEdge(7, 8)
+g.addEdge(6, 2)
+g.addEdge(6, 3)
+g.addEdge(6, 5)
+g.addEdge(3, 5)
+g.addEdge(3, 4)
+g.addEdge(5, 4)
+print(g.graph)
+print(g.BFS())
+print(g.BFS_1(2))
+print(g.DFS())
+print(g.CycleDetect())
+print(g.MuchiiCritice())
+print(g.NoduriCritice())
 
 g2=Graph_Orientat(5)
 g2.addEdge(1, 3)
 g2.addEdge(1, 2)
-g2.addEdge(2, 3)
+g2.addEdge(3, 2)
 g2.addEdge(3, 4)
 g2.addEdge(4, 5)
 g2.addEdge(3, 5)
-g2.SortTop()
+#print(g2.MuchiiCritice())
